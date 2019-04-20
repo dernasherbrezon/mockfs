@@ -1,0 +1,20 @@
+language: java
+bundler_args: --retry 1
+
+addons:
+  sonarcloud:
+    organization: "dernasherbrezon-github"
+    token:
+      secure: "ouCVIXt36eqfYRSFLPUlEsaMoSCG/l7iHNC8U677UIxbGxBiM/Np0R0wk1xCM63PXzvo1DDdKujyoeVYyDZ0MXO9qgDNQ6UYvjJeLHxpVEjLFWwLfLIrbMlZ6SfYueB9q9RFexBRPIfIB7hdHM/S/MI3iQL0UPunztOHhxVrDwHtiBfPqmRQ9pR6mYFb64jSCsdifMny0KBFoXxKmjMakTjoISsvS754WqojpJwUe1driCOx1CKd4tNeiTiNSXKsOTr+vCi4kSXf9khIhkJkLQdB//HfBg6/Ynn0FTMDgATSSBRKrFTVnUQ2BJCn8wbzALaVwINYFUwoX2e/ToeGbtxRMus2S3OHiscVZxBXFgurXbTX56S/XU3DoujBSKliYEJmHzA7d2XCzgUkVJ2Q0Cn88A+cUgPGFOILGsVHFbThUAxUtF7N3nc1TtJjVyFAjng9JmiJMzcjmDQ0hLCYfvIbVZHNc6kz1icGUYFNyONzAqD6AZWcnOZWDLD6eNn9KAOlR2Y+UtcVBX2wj54FmsCNYhqbYWCpua8gbZDmz/soLd8YWFaJmKZv4Nr9UBmDrVFGXhpJTZAVGXhrHc2nI2LvHldYWudlBWJ6rdQznhT554fG+BRnIHhz3eHPaN31klm93fndPqe2QX1bFLkB+qBL24oAxGsD7E9zNev/etg="
+
+script:
+  # JaCoCo is used to have code coverage, the agent has to be activated
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
+
+cache:
+  directories:
+  - $HOME/.m2
+
+before_cache:
+  - rm -rf $HOME/.m2/repository/com/aerse/
+
