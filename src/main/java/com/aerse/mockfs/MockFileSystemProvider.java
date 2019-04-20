@@ -55,7 +55,8 @@ public class MockFileSystemProvider extends FileSystemProvider {
 
 	@Override
 	public Path getPath(URI uri) {
-		return impl.getPath(uri);
+		Path result = impl.getPath(uri);
+		return new MockPath(result, new MockFileSystem(result.getFileSystem()));
 	}
 
 	@Override

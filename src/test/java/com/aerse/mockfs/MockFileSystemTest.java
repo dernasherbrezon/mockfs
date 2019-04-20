@@ -11,15 +11,21 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.ProviderMismatchException;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +37,7 @@ import org.junit.rules.TemporaryFolder;
 public class MockFileSystemTest {
 
 	private MockFileSystem mockFs;
+	private FileSystem fs;
 	private Path basePath;
 
 	@Rule
@@ -59,7 +66,7 @@ public class MockFileSystemTest {
 		}
 		assertEquals(sampleText, str.toString().trim());
 	}
-	
+
 	@Test(expected = IOException.class)
 	public void testFailingWrite() throws IOException {
 		byte[] data = createSampleData();
@@ -77,7 +84,7 @@ public class MockFileSystemTest {
 		try (OutputStream w = Files.newOutputStream(path)) {
 			w.write(data);
 		}
-		
+
 		int failAfterBytes = 5;
 		mockFs.mock(path, new FailingByteChannelCallback(failAfterBytes));
 
@@ -89,8 +96,8 @@ public class MockFileSystemTest {
 				// do nothing
 			}
 			fail("expected IOException");
-		} catch( IOException e ) {
-			//do nothing
+		} catch (IOException e) {
+			// do nothing
 		}
 		assertEquals(failAfterBytes, readBytes);
 	}
@@ -172,9 +179,60 @@ public class MockFileSystemTest {
 		assertNotNull(Files.setAttribute(basePath, "lastModifiedTime", FileTime.from(System.currentTimeMillis(), TimeUnit.MILLISECONDS)));
 	}
 
+	@Test(expected = ProviderMismatchException.class)
+	public void testInvalidPathForStream() throws IOException {
+		Path fsPath = fs.getPath(tempFolder.getRoot().getAbsolutePath()).resolve(UUID.randomUUID().toString());
+		try (SeekableByteChannel channel = mockFs.provider().newByteChannel(fsPath, Collections.singleton(StandardOpenOption.READ))) {
+			// do nothing
+		}
+	}
+
+	@Test(expected = ProviderMismatchException.class)
+	public void testInvalidPathForHidden() throws IOException {
+		Path fsPath = fs.getPath(tempFolder.getRoot().getAbsolutePath()).resolve(UUID.randomUUID().toString());
+		mockFs.provider().isHidden(fsPath);
+	}
+
+	@Test(expected = ProviderMismatchException.class)
+	public void testInvalidPathForCheckAccess() throws IOException {
+		Path fsPath = fs.getPath(tempFolder.getRoot().getAbsolutePath()).resolve(UUID.randomUUID().toString());
+		mockFs.provider().checkAccess(fsPath);
+	}
+
+	@Test
+	public void testMockScheme() {
+		assertEquals(fs.provider().getScheme(), mockFs.provider().getScheme());
+	}
+
+	@Test
+	public void testGetPath() {
+		URI uri = basePath.toUri();
+		Path path = mockFs.provider().getPath(uri);
+		assertTrue(path.getFileSystem() instanceof MockFileSystem);
+	}
+
+	@SuppressWarnings({ "unused", "resource" })
+	@Test(expected = IllegalArgumentException.class)
+	public void testIllegalArgument() {
+		new MockFileSystem(null);
+	}
+
+	@Test
+	public void testMockUnderlaying() {
+		assertEquals(fs.isOpen(), mockFs.isOpen());
+		assertEquals(fs.isReadOnly(), mockFs.isReadOnly());
+		assertEquals(fs.getSeparator(), mockFs.getSeparator());
+		Set<String> expected = fs.supportedFileAttributeViews();
+		Set<String> actual = mockFs.supportedFileAttributeViews();
+		assertEquals(expected.size(), expected.size());
+		for (String cur : expected) {
+			assertTrue(actual.contains(cur));
+		}
+	}
+
 	@Before
 	public void start() {
-		FileSystem fs = FileSystems.getDefault();
+		fs = FileSystems.getDefault();
 		mockFs = new MockFileSystem(fs);
 		basePath = mockFs.getPath(tempFolder.getRoot().getAbsolutePath());
 	}
