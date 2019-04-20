@@ -181,8 +181,9 @@ class MockPath implements Path {
 		if (impl == null) {
 			if (other.impl != null)
 				return false;
-		} else if (!impl.equals(other.impl))
+		} else if (!impl.equals(other.impl)) {
 			return false;
+		}
 		return true;
 	}
 	

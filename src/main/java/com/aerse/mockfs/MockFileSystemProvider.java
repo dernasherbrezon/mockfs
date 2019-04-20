@@ -24,7 +24,7 @@ import java.util.Set;
 public class MockFileSystemProvider extends FileSystemProvider {
 
 	private final FileSystemProvider impl;
-	private final Map<Path, ByteChannelCallback> mocks = new HashMap<Path, ByteChannelCallback>();
+	private final Map<Path, ByteChannelCallback> mocks = new HashMap<>();
 
 	public MockFileSystemProvider(FileSystemProvider impl) {
 		this.impl = impl;
