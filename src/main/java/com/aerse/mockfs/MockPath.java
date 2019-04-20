@@ -160,4 +160,30 @@ public class MockPath implements Path {
 	public String toString() {
 		return impl.toString();
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((impl == null) ? 0 : impl.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MockPath other = (MockPath) obj;
+		if (impl == null) {
+			if (other.impl != null)
+				return false;
+		} else if (!impl.equals(other.impl))
+			return false;
+		return true;
+	}
+	
 }

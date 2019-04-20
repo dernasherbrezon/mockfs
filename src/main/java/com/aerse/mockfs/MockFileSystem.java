@@ -22,6 +22,10 @@ public class MockFileSystem extends FileSystem {
 		this.impl = impl;
 		fileSystemProvider = new MockFileSystemProvider(impl.provider());
 	}
+	
+	public void mock(Path path, ByteChannelCallback channel) {
+		fileSystemProvider.mock(path, channel);
+	}
 
 	@Override
 	public FileSystemProvider provider() {

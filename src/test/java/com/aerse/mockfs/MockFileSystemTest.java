@@ -43,12 +43,18 @@ public class MockFileSystemTest {
 	public void testWriteRead() throws IOException {
 		String sampleText = UUID.randomUUID().toString();
 		Path path = basePath.resolve(UUID.randomUUID().toString());
+		mockFs.mock(path, new NoOpByteChannelCallback());
 		try (BufferedWriter w = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			w.write(sampleText);
 		}
+		StringBuilder str = new StringBuilder();
 		try (BufferedReader r = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-			assertEquals(sampleText, r.readLine());
+			String curLine = null;
+			while ((curLine = r.readLine()) != null) {
+				str.append(curLine).append("\n");
+			}
 		}
+		assertEquals(sampleText, str.toString().trim());
 	}
 
 	@Test

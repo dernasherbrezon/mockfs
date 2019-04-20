@@ -17,15 +17,21 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class MockFileSystemProvider extends FileSystemProvider {
 
 	private final FileSystemProvider impl;
+	private final Map<Path, ByteChannelCallback> mocks = new HashMap<Path, ByteChannelCallback>();
 
 	public MockFileSystemProvider(FileSystemProvider impl) {
 		this.impl = impl;
+	}
+
+	public void mock(Path path, ByteChannelCallback channel) {
+		mocks.put(path.normalize(), channel);
 	}
 
 	@Override
@@ -54,7 +60,12 @@ public class MockFileSystemProvider extends FileSystemProvider {
 			throw new ProviderMismatchException();
 		}
 		MockPath mockPath = (MockPath) path;
-		return impl.newByteChannel(mockPath.getImpl(), options, attrs);
+		SeekableByteChannel result = impl.newByteChannel(mockPath.getImpl(), options, attrs);
+		ByteChannelCallback callback = mocks.get(path.normalize());
+		if( callback != null ) {
+			return new MockByteChannel(result, callback);
+		}
+		return result;
 	}
 
 	@Override
