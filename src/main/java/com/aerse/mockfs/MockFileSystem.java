@@ -26,6 +26,10 @@ public class MockFileSystem extends FileSystem {
 	public void mock(Path path, ByteChannelCallback channel) {
 		fileSystemProvider.mock(path, channel);
 	}
+	
+	public void removeMock(Path path) {
+		fileSystemProvider.removeMock(path);
+	}
 
 	@Override
 	public FileSystemProvider provider() {

@@ -34,6 +34,10 @@ public class MockFileSystemProvider extends FileSystemProvider {
 		mocks.put(path.normalize(), channel);
 	}
 
+	public void removeMock(Path path) {
+		mocks.remove(path);
+	}
+
 	@Override
 	public String getScheme() {
 		return impl.getScheme();
@@ -61,8 +65,12 @@ public class MockFileSystemProvider extends FileSystemProvider {
 		}
 		MockPath mockPath = (MockPath) path;
 		SeekableByteChannel result = impl.newByteChannel(mockPath.getImpl(), options, attrs);
-		ByteChannelCallback callback = mocks.get(path.normalize());
-		if( callback != null ) {
+		Path normalized = path.normalize();
+		ByteChannelCallback callback = mocks.get(normalized);
+		if (callback == null) {
+			callback = mocks.get(normalized.getParent());
+		}
+		if (callback != null) {
 			return new MockByteChannel(result, callback);
 		}
 		return result;
