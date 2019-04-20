@@ -4,10 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -55,6 +58,49 @@ public class MockFileSystemTest {
 			}
 		}
 		assertEquals(sampleText, str.toString().trim());
+	}
+	
+	@Test(expected = IOException.class)
+	public void testFailingWrite() throws IOException {
+		byte[] data = createSampleData();
+		Path path = basePath.resolve(UUID.randomUUID().toString());
+		mockFs.mock(path, new FailingByteChannelCallback(5));
+		try (OutputStream w = Files.newOutputStream(path)) {
+			w.write(data);
+		}
+	}
+
+	@Test
+	public void testFailingReadCallback() throws IOException {
+		byte[] data = createSampleData();
+		Path path = basePath.resolve(UUID.randomUUID().toString());
+		try (OutputStream w = Files.newOutputStream(path)) {
+			w.write(data);
+		}
+		
+		int failAfterBytes = 5;
+		mockFs.mock(path, new FailingByteChannelCallback(failAfterBytes));
+
+		byte[] output = new byte[data.length];
+		int readBytes = -1;
+		int currentRead = 0;
+		try (InputStream r = Files.newInputStream(path)) {
+			while ((readBytes += r.read(output, currentRead, output.length - currentRead)) != -1) {
+				// do nothing
+			}
+			fail("expected IOException");
+		} catch( IOException e ) {
+			//do nothing
+		}
+		assertEquals(failAfterBytes, readBytes);
+	}
+
+	private static byte[] createSampleData() {
+		byte[] data = new byte[10];
+		for (byte i = 0; i < data.length; i++) {
+			data[i] = i;
+		}
+		return data;
 	}
 
 	@Test
