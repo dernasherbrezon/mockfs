@@ -10,6 +10,21 @@ import java.nio.file.attribute.UserPrincipalLookupService;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Set;
 
+/**
+ * <p>Java FileSystem for simulating IOExceptions.
+ * <b>Usage</b>:
+ * <pre>
+ * MockFileSystem fs = new MockFileSystem(FileSystems.getDefault());
+ * fs.mock(fs.getPath("/some/file"), new FailingByteChannelCallback(5));
+ * </pre>
+ * 
+ * Implement {@link ByteChannelCallback} to inject various behaivour. Currently implemented:
+ * <ul>
+ * 	<li>{@link NoOpByteChannelCallback} - no operation. Just read/write data. Same behaivour as if no mock was configured</li>
+ *  <li>{@link FailingByteChannelCallback} - throw IOException after specified number of bytes was read/written</li>
+ * </ul>
+ *
+ */
 public class MockFileSystem extends FileSystem {
 
 	private final FileSystem impl;
@@ -23,10 +38,19 @@ public class MockFileSystem extends FileSystem {
 		fileSystemProvider = new MockFileSystemProvider(impl.provider());
 	}
 	
-	public void mock(Path path, ByteChannelCallback channel) {
-		fileSystemProvider.mock(path, channel);
+	/**
+	 * Mock read/write to the specified path.
+	 * @param path - if path points to fail, then access to this file will be mocked. If path is directory, then callback will be executed for every file in this directory
+	 * @param callback - callback to handle read/write operations
+	 */
+	public void mock(Path path, ByteChannelCallback callback) {
+		fileSystemProvider.mock(path, callback);
 	}
 	
+	/**
+	 * Remove mock from the specified path
+	 * @param path - cannot be null
+	 */
 	public void removeMock(Path path) {
 		fileSystemProvider.removeMock(path);
 	}

@@ -30,8 +30,8 @@ public class MockFileSystemProvider extends FileSystemProvider {
 		this.impl = impl;
 	}
 
-	public void mock(Path path, ByteChannelCallback channel) {
-		mocks.put(path.normalize(), channel);
+	public void mock(Path path, ByteChannelCallback callback) {
+		mocks.put(path.normalize(), callback);
 	}
 
 	public void removeMock(Path path) {

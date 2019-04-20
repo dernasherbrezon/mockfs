@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
-public class MockByteChannel implements SeekableByteChannel {
+class MockByteChannel implements SeekableByteChannel {
 
 	private final SeekableByteChannel impl;
 	private final ByteChannelCallback callback;
 
-	public MockByteChannel(SeekableByteChannel impl, ByteChannelCallback callback) {
+	MockByteChannel(SeekableByteChannel impl, ByteChannelCallback callback) {
 		this.impl = impl;
 		this.callback = callback;
 	}

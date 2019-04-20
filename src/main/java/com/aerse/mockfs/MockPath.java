@@ -12,7 +12,7 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.Iterator;
 
-public class MockPath implements Path {
+class MockPath implements Path {
 	
 	private final Path impl;
 	private final FileSystem fs;
