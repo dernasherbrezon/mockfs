@@ -89,7 +89,7 @@ public class MockFileSystemTest {
 		mockFs.mock(path, new FailingByteChannelCallback(failAfterBytes));
 
 		byte[] output = new byte[data.length];
-		int readBytes = -1;
+		int readBytes = 0;
 		int currentRead = 0;
 		try (InputStream r = Files.newInputStream(path)) {
 			while ((readBytes += r.read(output, currentRead, output.length - currentRead)) != -1) {

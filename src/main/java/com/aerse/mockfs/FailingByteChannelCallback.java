@@ -25,7 +25,7 @@ public class FailingByteChannelCallback implements ByteChannelCallback {
 			processedBytes += result;
 			return result;
 		}
-		ByteBuffer smaller = (ByteBuffer) dst.limit(dst.position() + (failAfterBytes - processedBytes) + 1);
+		ByteBuffer smaller = (ByteBuffer) dst.limit(dst.position() + (failAfterBytes - processedBytes));
 		int result = channel.read(smaller);
 		processedBytes += result;
 		return result;
