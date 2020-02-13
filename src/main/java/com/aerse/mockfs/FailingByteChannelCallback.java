@@ -25,7 +25,7 @@ public class FailingByteChannelCallback implements ByteChannelCallback {
 			processedBytes += result;
 			return result;
 		}
-		ByteBuffer smaller = (ByteBuffer) dst.limit(dst.position() + (failAfterBytes - processedBytes));
+		ByteBuffer smaller = dst.limit(dst.position() + (failAfterBytes - processedBytes));
 		int result = channel.read(smaller);
 		processedBytes += result;
 		return result;
@@ -42,7 +42,7 @@ public class FailingByteChannelCallback implements ByteChannelCallback {
 			return result;
 		}
 		int previousLimit = dst.limit();
-		ByteBuffer smaller = (ByteBuffer) dst.limit(dst.position() + (failAfterBytes - processedBytes));
+		ByteBuffer smaller = dst.limit(dst.position() + (failAfterBytes - processedBytes));
 		int result = channel.write(smaller);
 		processedBytes += result;
 		//restore limit so next onWrite will be called
