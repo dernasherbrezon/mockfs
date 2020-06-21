@@ -10,7 +10,7 @@ Java FileSystem for simulating IOExceptions
 <dependency>
   <groupId>com.aerse</groupId>
   <artifactId>mockfs</artifactId>
-  <version>1.3</version>
+  <version>1.4</version>
 </dependency>
 ```
 
