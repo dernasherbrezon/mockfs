@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.Before;
@@ -20,6 +21,13 @@ public class MockPathTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
+
+	@Test
+	public void testCreateDirectories() throws Exception {
+		Path anotherBasePath = basePath.resolve("test").resolve("test");
+		Files.createDirectories(anotherBasePath);
+		assertTrue(Files.exists(anotherBasePath));
+	}
 
 	@Test
 	public void testEqualsHashcode() {

@@ -6,6 +6,7 @@ import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.ProviderMismatchException;
 import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchEvent.Modifier;
 import java.nio.file.WatchKey;
@@ -13,10 +14,10 @@ import java.nio.file.WatchService;
 import java.util.Iterator;
 
 class MockPath implements Path {
-	
+
 	private final Path impl;
 	private final FileSystem fs;
-	
+
 	public MockPath(Path impl, FileSystem fs) {
 		this.impl = impl;
 		this.fs = fs;
@@ -31,7 +32,7 @@ class MockPath implements Path {
 	public boolean isAbsolute() {
 		return impl.isAbsolute();
 	}
-	
+
 	public Path getImpl() {
 		return impl;
 	}
@@ -68,7 +69,7 @@ class MockPath implements Path {
 
 	@Override
 	public boolean startsWith(Path other) {
-		return impl.startsWith(other);
+		return impl.startsWith(getImpl(other));
 	}
 
 	@Override
@@ -78,7 +79,7 @@ class MockPath implements Path {
 
 	@Override
 	public boolean endsWith(Path other) {
-		return impl.endsWith(other);
+		return impl.endsWith(getImpl(other));
 	}
 
 	@Override
@@ -93,7 +94,7 @@ class MockPath implements Path {
 
 	@Override
 	public Path resolve(Path other) {
-		return new MockPath(impl.resolve(other), fs);
+		return new MockPath(impl.resolve(getImpl(other)), fs);
 	}
 
 	@Override
@@ -103,7 +104,7 @@ class MockPath implements Path {
 
 	@Override
 	public Path resolveSibling(Path other) {
-		return new MockPath(impl.resolveSibling(other), fs);
+		return new MockPath(impl.resolveSibling(getImpl(other)), fs);
 	}
 
 	@Override
@@ -113,7 +114,7 @@ class MockPath implements Path {
 
 	@Override
 	public Path relativize(Path other) {
-		return new MockPath(impl.relativize(other), fs);
+		return new MockPath(impl.relativize(getImpl(other)), fs);
 	}
 
 	@Override
@@ -148,12 +149,12 @@ class MockPath implements Path {
 
 	@Override
 	public Iterator<Path> iterator() {
-		return impl.iterator();
+		return new MockPathIterator(impl.iterator(), fs);
 	}
 
 	@Override
 	public int compareTo(Path other) {
-		return impl.compareTo(other);
+		return impl.compareTo(getImpl(other));
 	}
 
 	@Override
@@ -186,5 +187,12 @@ class MockPath implements Path {
 		}
 		return true;
 	}
-	
+
+	private static Path getImpl(Path path) {
+		if (!(path instanceof MockPath)) {
+			throw new ProviderMismatchException();
+		}
+		return ((MockPath) path).getImpl();
+	}
+
 }
