@@ -1,12 +1,28 @@
-# mockfs [![Build Status](https://travis-ci.org/dernasherbrezon/mockfs.svg?branch=master)](https://travis-ci.org/dernasherbrezon/mockfs) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.aerse%3Amockfs&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.aerse%3Amockfs)
+## About [![Build Status](https://travis-ci.org/dernasherbrezon/mockfs.svg?branch=master)](https://travis-ci.org/dernasherbrezon/mockfs) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.aerse%3Amockfs&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.aerse%3Amockfs)
+
 Java FileSystem for simulating IOExceptions
 
-# Usage
+## Usage
+
+1. Add maven dependency:
+
+```xml
+<dependency>
+  <groupId>com.aerse</groupId>
+  <artifactId>mockfs</artifactId>
+  <version>1.3</version>
+</dependency>
+```
+
+2. Ensure code is ready
 
 * Ensure `java.nio.file.Path` is used instead of `java.io.File`. FileSystem is available only for `Path`.
 * Ensure `Path::resolve(...)` is used instead of `java.nio.file.Paths.get(...)` or `Path::of(...)`. The latter uses `FileSystems.getDefault()` instead of mocked
 * All `Path` should be created from the FileSystem using `FileSystem::getPath(...)` method.
-* Setup the test. For example:
+
+3. Setup the test
+
+For example:
 
 ```java
 	@Test(expected = IOException.class)
@@ -20,9 +36,9 @@ Java FileSystem for simulating IOExceptions
 	}
 ```
 
-# Features
+## Features
 
- * MockFileSystem could transparently pass data to the default FileSystem. Just use `com.aerse.mockfs.NoOpByteChannelCallback`:
+ * MockFileSystem could transparently pass the data to the default FileSystem. Just use `com.aerse.mockfs.NoOpByteChannelCallback`:
  ```java
 		FileSystem fs = FileSystems.getDefault();
 		MockFileSystem mockFs = new MockFileSystem(fs);
