@@ -1,7 +1,7 @@
 package com.aerse.mockfs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.file.FileSystem;
@@ -33,7 +33,7 @@ public class MockPathTest {
 	public void testEqualsHashcode() {
 		Path anotherBasePath = mockFs.getPath(tempFolder.getRoot().getAbsolutePath());
 		assertEquals(basePath.hashCode(), anotherBasePath.hashCode());
-		assertTrue(anotherBasePath.equals(basePath));
+		assertEquals(anotherBasePath, basePath);
 	}
 
 	@Test
@@ -43,8 +43,8 @@ public class MockPathTest {
 		assertEquals(expected.getNameCount(), basePath.getNameCount());
 		assertEquals(expected.toUri(), basePath.toUri());
 		assertEquals(expected.toFile().getAbsolutePath(), basePath.toFile().getAbsolutePath());
-		assertFalse(basePath.equals(expected));
-		assertTrue(expected.getRoot().equals(((MockPath) basePath.getRoot()).getImpl()));
+		assertNotEquals(basePath, expected);
+		assertEquals(expected.getRoot(), ((MockPath) basePath.getRoot()).getImpl());
 	}
 
 	@Before
