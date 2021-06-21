@@ -1,4 +1,4 @@
-## About [![Build Status](https://travis-ci.org/dernasherbrezon/mockfs.svg?branch=master)](https://travis-ci.org/dernasherbrezon/mockfs) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.aerse%3Amockfs&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.aerse%3Amockfs)
+## About [![Build Status](https://travis-ci.com/dernasherbrezon/mockfs.svg?branch=master)](https://travis-ci.com/dernasherbrezon/mockfs) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.aerse%3Amockfs&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.aerse%3Amockfs)
 
 Java FileSystem for simulating IOExceptions
 
